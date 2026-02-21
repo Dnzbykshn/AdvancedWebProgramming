@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Assistant AI Agent</title>
+    <meta name="description"
+        content="AI-powered career assistant that communicates with potential employers on your behalf">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <!-- Animated Background -->
+    <div class="bg-grid"></div>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-glow bg-glow-3"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                        <path d="M2 17l10 5 10-5" />
+                        <path d="M2 12l10 5 10-5" />
+                    </svg>
+                </div>
+                <div>
+                    <h1>Career Assistant</h1>
+                    <p class="logo-subtitle">AI Agent by Deniz Büyükşahin</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-ghost" id="historyToggle" onclick="toggleHistory()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                    <span>History</span>
+                </button>
+                <button class="btn btn-ghost" id="logsToggle" onclick="toggleLogs()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                        <polyline points="10 9 9 9 8 9" />
+                    </svg>
+                    <span>Logs</span>
+                    <span class="badge" id="logCount">0</span>
+                </button>
+                <div class="status-indicator" id="statusIndicator">
+                    <span class="status-dot"></span>
+                    <span>Online</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Message Form -->
+        <section class="card form-card" id="formSection">
+            <div class="card-header">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                        <polyline points="22,6 12,13 2,6" />
+                    </svg>
+                </div>
+                <div>
+                    <h2>Employer Message</h2>
+                    <p>Simulate an incoming message from a potential employer</p>
+                </div>
+            </div>
+            <form id="messageForm" onsubmit="handleSubmit(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="senderName">Sender Name</label>
+                        <input type="text" id="senderName" placeholder="e.g. John Smith" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="senderEmail">Sender Email</label>
+                        <input type="email" id="senderEmail" placeholder="e.g. hr@company.com" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="subject">Subject</label>
+                    <input type="text" id="subject" placeholder="e.g. Interview Invitation — Software Engineer"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label for="message">Message Body</label>
+                    <textarea id="message" rows="6" placeholder="Write the employer's message here..."
+                        required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                        <line x1="22" y1="2" x2="11" y2="13" />
+                        <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                    </svg>
+                    <span>Process Message</span>
+                </button>
+            </form>
+        </section>
+
+        <!-- Loading State -->
+        <section class="card loading-card hidden" id="loadingSection">
+            <div class="loading-spinner-container">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">
+                    <h3 id="loadingTitle">Processing...</h3>
+                    <p id="loadingSubtitle">The AI agents are working on your message</p>
+                </div>
+            </div>
+            <div class="pipeline-steps">
+                <div class="pipeline-step" id="step1">
+                    <div class="step-icon">📱</div>
+                    <span>Sending notification</span>
+                </div>
+                <div class="pipeline-step" id="step2">
+                    <div class="step-icon">🔍</div>
+                    <span>Checking question type</span>
+                </div>
+                <div class="pipeline-step" id="step3">
+                    <div class="step-icon">🤖</div>
+                    <span>Generating response</span>
+                </div>
+                <div class="pipeline-step" id="step4">
+                    <div class="step-icon">⚖️</div>
+                    <span>Evaluating quality</span>
+                </div>
+                <div class="pipeline-step" id="step5">
+                    <div class="step-icon">📧</div>
+                    <span>Sending email</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Response Section -->
+        <section class="card response-card hidden" id="responseSection">
+            <div class="card-header">
+                <div class="card-icon success">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+                        <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                </div>
+                <div>
+                    <h2 id="responseTitle">Response Generated</h2>
+                    <p id="responseSubtitle">Evaluated and approved by the critic agent</p>
+                </div>
+            </div>
+
+            <!-- Response Text -->
+            <div class="response-body" id="responseBody"></div>
+
+            <!-- Evaluation Scores -->
+            <div class="eval-section" id="evalSection">
+                <h3>Evaluation Scores</h3>
+                <div class="scores-grid">
+                    <div class="score-item">
+                        <div class="score-label">Tone</div>
+                        <div class="score-bar">
+                            <div class="score-fill" id="toneBar"></div>
+                        </div>
+                        <div class="score-value" id="toneScore">-</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="score-label">Clarity</div>
+                        <div class="score-bar">
+                            <div class="score-fill" id="clarityBar"></div>
+                        </div>
+                        <div class="score-value" id="clarityScore">-</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="score-label">Completeness</div>
+                        <div class="score-bar">
+                            <div class="score-fill" id="completenessBar"></div>
+                        </div>
+                        <div class="score-value" id="completenessScore">-</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="score-label">Safety</div>
+                        <div class="score-bar">
+                            <div class="score-fill" id="safetyBar"></div>
+                        </div>
+                        <div class="score-value" id="safetyScore">-</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="score-label">Relevance</div>
+                        <div class="score-bar">
+                            <div class="score-fill" id="relevanceBar"></div>
+                        </div>
+                        <div class="score-value" id="relevanceScore">-</div>
+                    </div>
+                </div>
+                <div class="overall-score">
+                    <span>Overall Score</span>
+                    <span class="overall-value" id="overallScore">-</span>
+                </div>
+                <div class="eval-feedback" id="evalFeedback"></div>
+                <div class="eval-meta">
+                    <span class="revision-badge" id="revisionBadge">0 revisions</span>
+                    <span class="email-status" id="emailStatus"></span>
+                </div>
+            </div>
+
+            <!-- Confidence Gauge -->
+            <div class="confidence-section" id="confidenceSection">
+                <h3>Detection Confidence</h3>
+                <div class="confidence-gauge">
+                    <div class="gauge-container">
+                        <svg viewBox="0 0 200 120" class="gauge-svg">
+                            <defs>
+                                <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stop-color="#ef4444" />
+                                    <stop offset="50%" stop-color="#f59e0b" />
+                                    <stop offset="100%" stop-color="#10b981" />
+                                </linearGradient>
+                            </defs>
+                            <!-- Background arc -->
+                            <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="rgba(255,255,255,0.1)"
+                                stroke-width="12" stroke-linecap="round" />
+                            <!-- Filled arc -->
+                            <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#gaugeGradient)"
+                                stroke-width="12" stroke-linecap="round" id="gaugeArc" stroke-dasharray="0 251.2" />
+                            <!-- Needle -->
+                            <line x1="100" y1="100" x2="100" y2="30" stroke="white" stroke-width="2"
+                                stroke-linecap="round" id="gaugeNeedle" transform="rotate(-90, 100, 100)" />
+                            <circle cx="100" cy="100" r="5" fill="white" />
+                        </svg>
+                        <div class="gauge-labels">
+                            <span>0%</span>
+                            <span>50%</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+                    <div class="gauge-info">
+                        <div class="gauge-value" id="confidenceValue">—</div>
+                        <div class="gauge-label" id="confidenceLabel">Awaiting analysis</div>
+                        <div class="gauge-category" id="confidenceCategory"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conversation History Thread -->
+            <div class="conversation-thread hidden" id="conversationThread">
+                <h3>Conversation Thread</h3>
+                <div class="thread-container" id="threadContainer"></div>
+            </div>
+
+            <!-- Unknown Question Alert -->
+            <div class="unknown-alert hidden" id="unknownAlert">
+                <div class="alert-icon">⚠️</div>
+                <div class="alert-content">
+                    <h4>Human Intervention Required</h4>
+                    <p id="unknownReason"></p>
+                    <span class="alert-badge" id="unknownCategory"></span>
+                </div>
+            </div>
+
+            <button class="btn btn-secondary" onclick="resetForm()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                    <polyline points="1 4 1 10 7 10" />
+                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+                </svg>
+                <span>New Message</span>
+            </button>
+        </section>
+
+        <!-- Conversation History Panel -->
+        <section class="card history-card hidden" id="historySection">
+            <div class="card-header">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                </div>
+                <div>
+                    <h2>Conversation Memory</h2>
+                    <p>All tracked conversations grouped by employer</p>
+                </div>
+                <button class="btn btn-ghost btn-sm" onclick="clearHistory()" style="margin-left:auto">Clear
+                    All</button>
+            </div>
+            <div id="historyContainer" class="history-container">
+                <div class="empty-logs">
+                    <p>No conversations yet. Process a message to start tracking conversations.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Logs Panel -->
+        <section class="card logs-card hidden" id="logsSection">
+            <div class="card-header">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                    </svg>
+                </div>
+                <div>
+                    <h2>Evaluation Logs</h2>
+                    <p>History of all processed messages and evaluations</p>
+                </div>
+                <button class="btn btn-ghost btn-sm" onclick="clearLogs()" style="margin-left:auto">Clear All</button>
+            </div>
+            <div id="logsContainer" class="logs-container">
+                <div class="empty-logs">
+                    <p>No logs yet. Process a message to see evaluation history.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Architecture Modal -->
+    <div class="modal-overlay hidden" id="archModal" onclick="closeArchModal(event)">
+        <div class="modal-content">
+            <button class="modal-close"
+                onclick="document.getElementById('archModal').classList.add('hidden')">×</button>
+            <h2>System Architecture</h2>
+            <div class="arch-flow">
+                <div class="arch-node">🌐 Frontend</div>
+                <div class="arch-arrow">→</div>
+                <div class="arch-node">⚡ FastAPI</div>
+                <div class="arch-arrow">→</div>
+                <div class="arch-node">🔍 Unknown Detector</div>
+                <div class="arch-arrow">→</div>
+                <div class="arch-node">🤖 Career Agent</div>
+                <div class="arch-arrow">⇄</div>
+                <div class="arch-node">⚖️ Evaluator</div>
+                <div class="arch-arrow">→</div>
+                <div class="arch-node">📧 Email + 📱 Notify</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Career Assistant AI Agent — Advanced Web Programming HW &copy; 2026</p>
+        <p class="footer-sub">Built with FastAPI + Gemini API + Resend + ntfy.sh</p>
+    </footer>
+
+    <script src="/static/app.js"></script>
+</body>
+
+</html>
