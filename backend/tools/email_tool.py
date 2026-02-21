@@ -38,12 +38,21 @@ async def send_email(to: str, subject: str, body: str) -> dict:
     </div>
     """
 
+    # Resend test domain (onboarding@resend.dev) can ONLY send to the account owner.
+    # Redirect to NOTIFY_EMAIL when using the test domain.
+    actual_to = to
+    if "resend.dev" in settings.FROM_EMAIL:
+        actual_to = settings.NOTIFY_EMAIL
+        print(f"[EMAIL] Test domain detected — redirecting to {actual_to} (original: {to})")
+
     payload = {
         "from": settings.FROM_EMAIL,
-        "to": [to],
+        "to": [actual_to],
         "subject": subject,
         "html": html_body,
     }
+
+    print(f"[EMAIL] Sending to: {to}, from: {settings.FROM_EMAIL}, subject: {subject}")
 
     try:
         async with httpx.AsyncClient() as client:
@@ -55,7 +64,9 @@ async def send_email(to: str, subject: str, body: str) -> dict:
                     "Content-Type": "application/json",
                 },
             )
-            if response.status_code == 200:
+            print(f"[EMAIL] Resend status: {response.status_code}, body: {response.text}")
+
+            if response.status_code in (200, 202):
                 result = response.json()
                 return {
                     "success": True,
@@ -68,4 +79,5 @@ async def send_email(to: str, subject: str, body: str) -> dict:
                     "error": f"Resend returned status {response.status_code}: {response.text}",
                 }
     except Exception as e:
+        print(f"[EMAIL] Exception: {e}")
         return {"success": False, "error": str(e)}
