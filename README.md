@@ -28,37 +28,41 @@ Employer Message → FastAPI Backend
 
 ## Agents & Components
 
-| Component | Description |
-|-----------|-------------|
-| **Career Agent** | Generates professional email responses grounded in CV data |
-| **Evaluator Agent** | LLM-as-a-Judge: scores Tone, Clarity, Completeness, Safety, Relevance |
-| **Unknown Detector** | Flags salary, legal, out-of-domain, and sensitive questions |
-| **Conversation Memory** | Tracks per-employer message history for multi-turn continuity |
-| **Email Tool** | Sends styled HTML emails via Resend API |
-| **Notification Tool** | Pushes mobile alerts via ntfy.sh (no account required) |
+| Component               | Description                                                           |
+| ----------------------- | --------------------------------------------------------------------- |
+| **Career Agent**        | Generates professional email responses grounded in CV data            |
+| **Evaluator Agent**     | LLM-as-a-Judge: scores Tone, Clarity, Completeness, Safety, Relevance |
+| **Unknown Detector**    | Flags salary, legal, out-of-domain, and sensitive questions           |
+| **Conversation Memory** | Tracks per-employer message history for multi-turn continuity         |
+| **Email Tool**          | Sends styled HTML emails via Resend API                               |
+| **Notification Tool**   | Pushes mobile alerts via ntfy.sh (no account required)                |
 
 ---
 
 ## Setup
 
 ### Prerequisites
+
 - Python 3.10+
-- API Keys: [Google AI Studio](https://aistudio.google.com/apikey) · [Resend](https://resend.com)
+- API Keys: [Google AI Studio](https://gemini.google.com/) · [Resend](https://www.google.com/)
 - ntfy app on your phone ([Android](https://play.google.com/store/apps/details?id=io.heckel.ntfy) / [iOS](https://apps.apple.com/app/ntfy/id1625396347))
 
 ### Install
+
 ```bash
 cd backend
 pip install -r requirements.txt
 ```
 
 ### Configure
+
 ```bash
 copy .env.example .env   # Windows
 # Then edit .env and fill in your API keys
 ```
 
 `.env` keys:
+
 ```
 GEMINI_API_KEY=your_gemini_api_key
 RESEND_API_KEY=your_resend_api_key
@@ -70,6 +74,7 @@ MAX_REVISION_ATTEMPTS=3
 ```
 
 ### Run
+
 ```bash
 cd backend
 python main.py
@@ -78,21 +83,22 @@ python -m uvicorn main:app --reload --port 8000
 ```
 
 ### Open
+
 Navigate to [http://localhost:8000](http://localhost:8000)
 
 ---
 
 ## API Endpoints
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `POST` | `/api/message` | Process an employer message through the full pipeline |
-| `GET` | `/api/logs` | View all evaluation logs |
-| `DELETE` | `/api/logs` | Clear all logs |
-| `GET` | `/api/conversations` | View all conversation histories (grouped by email) |
-| `GET` | `/api/conversations/{email}` | View conversation history for a specific employer |
-| `DELETE` | `/api/conversations` | Clear all conversation memory |
-| `GET` | `/api/health` | Health check |
+| Method   | Path                         | Description                                           |
+| -------- | ---------------------------- | ----------------------------------------------------- |
+| `POST`   | `/api/message`               | Process an employer message through the full pipeline |
+| `GET`    | `/api/logs`                  | View all evaluation logs                              |
+| `DELETE` | `/api/logs`                  | Clear all logs                                        |
+| `GET`    | `/api/conversations`         | View all conversation histories (grouped by email)    |
+| `GET`    | `/api/conversations/{email}` | View conversation history for a specific employer     |
+| `DELETE` | `/api/conversations`         | Clear all conversation memory                         |
+| `GET`    | `/api/health`                | Health check                                          |
 
 ---
 
@@ -149,22 +155,22 @@ AdvancedWebHW/
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| **Backend** | Python 3.10+, FastAPI, Pydantic v2 |
-| **AI** | Google Gemini 2.0 Flash |
-| **Email** | Resend API (HTTP) |
-| **Notifications** | ntfy.sh |
-| **Frontend** | HTML5, CSS3, Vanilla JavaScript |
+| Layer             | Technology                         |
+| ----------------- | ---------------------------------- |
+| **Backend**       | Python 3.10+, FastAPI, Pydantic v2 |
+| **AI**            | Google Gemini 2.0 Flash            |
+| **Email**         | Resend API (HTTP)                  |
+| **Notifications** | ntfy.sh                            |
+| **Frontend**      | HTML5, CSS3, Vanilla JavaScript    |
 
 ---
 
 ## Deliverables
 
-| Deliverable | Location |
-|-------------|----------|
-| Source code | This repository |
+| Deliverable          | Location               |
+| -------------------- | ---------------------- |
+| Source code          | This repository        |
 | Architecture diagram | `docs/architecture.md` |
-| Test cases (3) | `docs/test_cases.md` |
-| Project report | `docs/report.md` |
-| Prompt design | `docs/prompts.md` |
+| Test cases (3)       | `docs/test_cases.md`   |
+| Project report       | `docs/report.md`       |
+| Prompt design        | `docs/prompts.md`      |
