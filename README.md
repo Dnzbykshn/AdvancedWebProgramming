@@ -44,7 +44,7 @@ Employer Message → FastAPI Backend
 ### Prerequisites
 
 - Python 3.10+
-- API Keys: [Google AI Studio](https://gemini.google.com/) · [Resend](https://www.google.com/)
+- API Keys: [Google AI Studio]() · [Resend]()
 - ntfy app on your phone ([Android](https://play.google.com/store/apps/details?id=io.heckel.ntfy) / [iOS](https://apps.apple.com/app/ntfy/id1625396347))
 
 ### Install
